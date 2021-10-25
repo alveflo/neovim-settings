@@ -22,6 +22,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'valloric/MatchTagAlways'
 Plug 'jiangmiao/auto-pairs'
+Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 call plug#end()
 
 :map <C-n> :NERDTreeToggle<CR>
@@ -41,14 +43,54 @@ map <C-t><left> :tabp<cr>
 map <C-t><right> :tabn<cr>
 
 " Supprot for different goto definitions for different file types.
-autocmd FileType cs nmap <silent> gd :OmniSharpGotoDefinition<CR>
-autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
-autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
-autocmd FileType cs nnoremap <Leader><Space> :OmniSharpGetCodeActions<CR>
+"autocmd FileType cs nmap <silent> gd :OmniSharpGotoDefinition<CR>
+"autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
+"autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
+"autocmd FileType cs nnoremap <Leader><Space> :OmniSharpGetCodeActions<CR>
+"autocmd FileType cs nmap <silent> <buffer> <Leader>rr <Plug>(omnisharp_rename)
+"autocmd FileType ts nmap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
+"autocmd FileType html nmap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
+augroup omnisharp_commands
+  autocmd!
 
-autocmd FileType ts nmap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
-autocmd FileType html nmap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
+  " Show type information automatically when the cursor stops moving.
+  " Note that the type is echoed to the Vim command line, and will overwrite
+  " any other messages in this space including e.g. ALE linting messages.
+  autocmd CursorHold *.cs OmniSharpTypeLookup
 
+  " The following commands are contextual, based on the cursor position.
+  autocmd FileType cs nmap <silent> <buffer> gd <Plug>(omnisharp_go_to_definition)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfu <Plug>(omnisharp_find_usages)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfi <Plug>(omnisharp_find_implementations)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ospd <Plug>(omnisharp_preview_definition)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ospi <Plug>(omnisharp_preview_implementations)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ost <Plug>(omnisharp_type_lookup)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osd <Plug>(omnisharp_documentation)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfs <Plug>(omnisharp_find_symbol)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfx <Plug>(omnisharp_fix_usings)
+  autocmd FileType cs nmap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
+  autocmd FileType cs imap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
+
+  " Navigate up and down by method/property/field
+  autocmd FileType cs nmap <silent> <buffer> [[ <Plug>(omnisharp_navigate_up)
+  autocmd FileType cs nmap <silent> <buffer> ]] <Plug>(omnisharp_navigate_down)
+  " Find all code errors/warnings for the current solution and populate the quickfix window
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osgcc <Plug>(omnisharp_global_code_check)
+  " Contextual code actions (uses fzf, vim-clap, CtrlP or unite.vim selector when available)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
+  autocmd FileType cs xmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
+  " Repeat the last code action performed (does not use a selector)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
+  autocmd FileType cs xmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>os= <Plug>(omnisharp_code_format)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osnm <Plug>(omnisharp_rename)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osre <Plug>(omnisharp_restart_server)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osst <Plug>(omnisharp_start_server)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ossp <Plug>(omnisharp_stop_server)
+augroup END
 
 " The following commands are contextual, based on the cursor position.
 " autocmd FileType cs nnoremap <buffer>
@@ -58,10 +100,10 @@ let g:airline_powerline_fonts=1
 let g:tmuxline_powerline_separators = 0
 " set background=dark
 "colorscheme Monokai
-colorscheme minimalist
+"colorscheme minimalist
 let g:airline_theme='minimalist'
 set number
-set relativenumber
+" set relativenumber
 " Toggle relative line number
 nmap <C-L><C-L> :set norelativenumber<CR>
 map  <C-R><C-L> :set relativenumber<CR>
@@ -137,3 +179,7 @@ let g:ale_linters_ignore = {
 let g:ale_linters = {
 \ 'cs': ['OmniSharp']
 \}
+
+" Bind refresh of NERDTree to leader \+r
+nmap <silent> <leader>n :NERDTreeFocus<cr>R<c-w><c-p>
+
