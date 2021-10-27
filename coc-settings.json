@@ -1,5 +1,13 @@
 {
     "omnisharp.version": "v1.37.3",
     "omnisharp.trace.server": "information",
-    "omnisharp.debug.server": true
+    "omnisharp.debug.server": true,
+    "languageserver": {
+        "go": {
+	    "command": "gopls",
+	    "rootPatterns": ["go.mod"],
+	    "trace.server": "verbose",
+	    "filetypes": ["go"]
+	}
+    }
 }
