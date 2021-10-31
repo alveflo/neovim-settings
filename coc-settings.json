@@ -9,5 +9,6 @@
 	    "trace.server": "verbose",
 	    "filetypes": ["go"]
 	}
-    }
+
+}
 }
